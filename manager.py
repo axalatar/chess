@@ -120,7 +120,7 @@ class Manager():
       moveSet = piece.getLegalMoves(self) if strictLegal else piece.getMoves(self)
       destination = attemptedMove.toPos
       if(any((obj.toPos == destination and obj.fromPos == attemptedMove.fromPos and obj.special == attemptedMove.special) for obj in moveSet)):
-        if(self.board.getPiece(destination) != None):
+        if(self.board.getPiece(destination).getType() != " "):
           attemptedMove.captured = self.board.getPiece(destination)
         self.turn += 1
         self.board.movePiece(attemptedMove)
