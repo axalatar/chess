@@ -27,11 +27,11 @@ class King(base.Piece):
           
         legalSpaces.add(move.Move((self.x, self.y), (self.x + i, self.y + b)))
 
-    if(self.special == False):
+    if(self.special is False):
       if(not manager.isInCheck(self.color)):
         for rooks in [(7, 5, -1), (0, 3, 1)]:
           rook = manager.board.getPiece((rooks[0], self.y))
-          if(rook.getType() == 'r' and rook.special == False):
+          if(rook.getType() == 'r' and rook.special is False):
             empty = True
             for i in range(rooks[0]+rooks[2], rooks[1]+rooks[2], rooks[2]):
               if(manager.board.getPiece((i, self.y)).getType() != ' '):

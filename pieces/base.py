@@ -32,28 +32,15 @@ class Piece():
     
   
   def removeIllegalMoves(self, manager, moveList):
-    newList = copy.deepcopy(moveList)
-    color = self.getColor()
-    enemyColor = 'w' if color == 'b' else 'b'
-    for move in moveList:
-      simManager = copy.deepcopy(manager)
-      simManager.setFake()
-      simBoard = simManager.getBoard()
-      simManager.movePiece(move)
-      allMoves = simManager.getAllMoves(enemyColor, False)
+    def checkLegal(move):
+      manager.movePiece(move, False)
+      legal = not manager.isInCheck(self.color)
+      manager.undoMove()
+      return legal
+    
+    legalizedMoves = [i for i in moveList if checkLegal(i)]
 
-
-      for enemyMove in allMoves:    
-        if(simBoard.getKing(color) == enemyMove.toPos):
-          
-          for otherMove in newList:
-            if(otherMove.toPos == move.toPos):
-              
-              newList.remove(otherMove)
-              break
-          break
-
-    return newList
+    return legalizedMoves
           
         
   def getLegalMoves(self, manager):
