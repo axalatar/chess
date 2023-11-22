@@ -1,5 +1,3 @@
-import copy
-
 class Piece():
   def __init__(self, x, y, color):
     self.x = x
@@ -33,7 +31,7 @@ class Piece():
   
   def removeIllegalMoves(self, manager, moveList):
     def checkLegal(move):
-      manager.movePiece(move, False)
+      manager.movePieceTrusted(move)
       legal = not manager.isInCheck(self.color)
       manager.undoMove()
       return legal

@@ -108,8 +108,63 @@ class Manager():
       self.winner = ''
     
     
+  def checkMate(self, moves=None):
+    # check if there is a checkmate or stalemate on the board, you can optionally pass in a list
+    # of moves if they've already been found
+    colorTurn = self.getColorTurn()
+    enemyColor = 'w' if colorTurn == 'b' else 'b'
+    moves = self.getAllMoves(colorTurn) if moves is None else moves
+    if(moves == set()):
+      if(self.isInCheck(colorTurn)):
+        self.status = "checkmate"
+        self.winner = enemyColor
+      else:
+        self.status = "stalemate"
 
-  def movePiece(self, attemptedMove, strictLegal=True):
+  def movePieceTrusted(self, attemptedMove):
+    #this is for when we know the move is legal and don't want to check it again
+
+    destination = attemptedMove.toPos
+    piece = self.board.getPiece(attemptedMove.fromPos)
+    if(self.board.getPiece(destination).getType() != " "):
+      attemptedMove.captured = self.board.getPiece(destination)
+      print(attemptedMove.captured)
+    self.turn += 1
+    self.board.movePiece(attemptedMove)
+    type = piece.getType()
+    if(type == 'k' or type == 'r'):
+      if(piece.special == False):
+        piece.special = self.turn
+        # otherwise, there is no way to know whether or not a king/rook has moved for the first
+        # time while undoing a move, which is necessary for castling          
+          
+
+    if(type == 'p'):
+      if(abs(attemptedMove.toPos[1] - attemptedMove.fromPos[1]) == 2):
+        piece.special = self.turn
+        # this is for en passant, as you can only do it the turn after the two square move
+        
+    if(attemptedMove.special is not None):
+        
+      if(attemptedMove.special == 'en'):
+        #on passant  
+        attemptedMove.captured = self.board.getPiece((destination[0], destination[1] + (piece.getDirection()*-1)))          
+        self.board.setPiece((destination[0], destination[1] + (piece.getDirection()*-1)), base.Piece(destination[0], destination[1] + (piece.getDirection()*-1), None))
+      elif(attemptedMove.special == 'c'):
+        #castle
+        Y = destination[1]
+        if(destination[0] == 2):
+          self.board.movePiece(move.Move((0, Y), (3, Y)))
+        else:
+          self.board.movePiece(move.Move((7, Y), (5, Y)))
+      else:
+        #promotion
+        attemptedMove.captured = self.board.getPiece(destination)
+        self.board.setPiece((destination[0], destination[1]), pieces.getPieceByName(attemptedMove.special, color, destination[0], destination[1]))
+    self.moves.append(attemptedMove)
+
+
+  def movePiece(self, attemptedMove):
     if(self.status != "ongoing"):
       return
     pieceCoords = attemptedMove.fromPos
@@ -117,52 +172,9 @@ class Manager():
 
     color = piece.getColor()
     if(self.getColorTurn() == color):
-      moveSet = piece.getLegalMoves(self) if strictLegal else piece.getMoves(self)
+      moveSet = piece.getLegalMoves(self)
       destination = attemptedMove.toPos
       if(any((obj.toPos == destination and obj.fromPos == attemptedMove.fromPos and obj.special == attemptedMove.special) for obj in moveSet)):
-        if(self.board.getPiece(destination).getType() != " "):
-          attemptedMove.captured = self.board.getPiece(destination)
-        self.turn += 1
-        self.board.movePiece(attemptedMove)
-        type = piece.getType()
-        if(type == 'k' or type == 'r'):
-          if(piece.special == False):
-            piece.special = self.turn
-            # otherwise, there is no way to know whether or not a king/rook has moved for the first
-            # time while undoing a move, which is necessary for castling          
-          
-
-        if(type == 'p'):
-          if(abs(attemptedMove.toPos[1] - attemptedMove.fromPos[1]) == 2):
-            piece.special = self.turn
-            # this is for en passant, as you can only do it the turn after the two square move
-        
-        if(attemptedMove.special is not None):
-          
-          if(attemptedMove.special == 'en'):
-            #on passant  
-            attemptedMove.captured = self.board.getPiece((destination[0], destination[1] + (piece.getDirection()*-1)))          
-            self.board.setPiece((destination[0], destination[1] + (piece.getDirection()*-1)), base.Piece(destination[0], destination[1] + (piece.getDirection()*-1), None))
-          elif(attemptedMove.special == 'c'):
-            #castle
-            Y = destination[1]
-            if(destination[0] == 2):
-              self.board.movePiece(move.Move((0, Y), (3, Y)))
-            else:
-              self.board.movePiece(move.Move((7, Y), (5, Y)))
-          else:
-            #promotion
-            attemptedMove.captured = self.board.getPiece(destination)
-            self.board.setPiece((destination[0], destination[1]), pieces.getPieceByName(attemptedMove.special, color, destination[0], destination[1]))
-        self.moves.append(attemptedMove)
-
-    
-    colorTurn = self.getColorTurn()
-    enemyColor = 'w' if colorTurn == 'b' else 'b'
-    moves = self.getAllMoves(colorTurn, False)
-    if(moves == set()):
-      if(self.isInCheck(colorTurn)):
-        self.status = "checkmate"
-        self.winner = enemyColor
-      else:
-        self.status = "stalemate"
+        self.movePieceTrusted(attemptedMove)
+        self.checkMate()
+        return

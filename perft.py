@@ -1,8 +1,8 @@
 import manager
 import time
-
+import user
 manager = manager.Manager()
-
+tempUser = user.User(manager)
 
 
 nodes = 0
@@ -25,22 +25,25 @@ def perft(depth, manager):
   if(depth == 0):
     nodes += 1
     return
-
+  
   moves = manager.getAllMoves(manager.getColorTurn(), False)
+  color = manager.getColorTurn()
   for move in moves:
-    manager.movePiece(move, False)
-    if(manager.isInCheck(manager.getColorTurn())): #if the move puts the player in check, it is illegal
+    manager.movePieceTrusted(move)
+    if(manager.isInCheck(color)): #if the move puts the player in check, it is illegal
       manager.undoMove()
       continue
-    if(move.special == 'c'):
+
+    if(move.special == 'c'): 
       castles += 1
-    elif(move.special == 'e'):
+    elif(move.special == 'en'):
       ep += 1
     elif(move.special is not None):
       promotions += 1
     if(manager.isInCheck(manager.getColorTurn())):
       checks += 1
-      if(manager.status == 'checkmate'):
+      manager.checkMate()
+      if(manager.status == "checkmate"):
         checkmates += 1
     if(move.captured is not None):
       captures += 1
@@ -48,13 +51,16 @@ def perft(depth, manager):
     perft(depth-1, manager)
     manager.undoMove()
 
-DEPTH = 4
 
-start = time.time()
-perft(DEPTH, manager)
-end = time.time()
-print("Time elapsed: " + str(end - start) + " seconds")
-print(f"""
+
+if(__name__ == "__main__"):
+  DEPTH = 4
+
+  start = time.time()
+  perft(DEPTH, manager)
+  end = time.time()
+  print("Time elapsed: " + str(end - start) + " seconds")
+  print(f"""
       Nodes: {nodes}
       Captures: {captures}
       En Passant: {ep}

@@ -10,11 +10,14 @@ user = user.User(manager)
 
 while True:
   move = None
+  depth = 0
   if(manager.getColorTurn() == 'w'):
     move = user.getMove()
   else:
-    move = ai.generateMove(manager)
+    # move = ai.generateMove(manager)
+    move = user.getMove()
   manager.movePiece(move)
+  depth += 1
   user.resetWithMessage("", [], (move.toPos[0], move.toPos[1]))
 
   match(manager.status):
