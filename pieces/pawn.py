@@ -43,6 +43,7 @@ class Pawn(base.Piece):
               if piece2.color != self.color:
                addLegalMove((x+i, y+self.direction))
             else:
+              #en passant
               piece3 = manager.board.getPiece((x+i, y))
               if piece3.getType() == 'p' and piece3.color != self.color:
                 if(piece3.special == manager.turn):
