@@ -128,7 +128,6 @@ class Manager():
     piece = self.board.getPiece(attemptedMove.fromPos)
     if(self.board.getPiece(destination).getType() != " "):
       attemptedMove.captured = self.board.getPiece(destination)
-      print(attemptedMove.captured)
     self.turn += 1
     self.board.movePiece(attemptedMove)
     type = piece.getType()

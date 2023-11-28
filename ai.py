@@ -29,34 +29,12 @@ def evaluateBoard(manager, color):
     
     value += (tempValue if piece.color == color else (tempValue * -1))
   return value
-    
-
-
-DEPTH = 1
-
-
-def findAllBranches(manager, currentDepth=0):
-  global DEPTH
-  if(currentDepth == DEPTH):
-    return
-    
-  moves = manager.getAllMoves(manager.getColorTurn())
-
-  branches = []
-  for move in moves:
-    managerClone = copy.deepcopy(manager)
-    managerClone.movePiece(move)
-    branches.append([move, findAllBranches(managerClone, currentDepth + 1)])
-  return branches
+  
   
   
   
 
 def generateMove(manager):
-  # input(findAllBranches(manager))
-
-  #sadly, the code is way too ineffecient to check the opponent's turn in a reasonable timeframe, so here's a simple one
-  
   moves = manager.getAllMoves(manager.getColorTurn())
   bestValue = [-10000]
   for move in moves:
