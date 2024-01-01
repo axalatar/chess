@@ -4,10 +4,8 @@ import move
   
 def getLegalMoves(self, manager):
   legalSpaces = set()
-  for i in range(-1, 2, 2):
-    #-1 and 1
-    for b in range(-1, 2, 2):
-      #another -1 and 1
+  for i in [-1, 1]:
+    for b in [-1 ,1]:
       toX = self.x
       toY = self.y
       for c in range(8):

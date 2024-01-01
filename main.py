@@ -15,7 +15,7 @@ while True:
     move = user.getMove()
   else:
     move = ai.generateMove(manager)
-    # move = user.getMove()
+    move = user.getMove()
   manager.movePiece(move)
   depth += 1
   user.resetWithMessage("", [], (move.toPos[0], move.toPos[1]))

@@ -62,12 +62,126 @@ class Manager():
         return True
     return False
 
-  def isInCheck(self, color):
+  def findExpensiveCheck(self, color):
     kingCoords = self.board.getKing(color)
     
     if(self.findAttackingPiece(kingCoords, color, True)):
       return True
     return False
+
+
+  def isInCheck(self, color):
+
+    
+    
+    kingCoords = self.board.getKing(color)
+    # king = self.board.getPiece(self.board.getKing(color))
+
+    def movingPiece(velocityX, velocityY):
+      
+      for i in range(1,8):
+        x = kingCoords[0] + velocityX*i
+        y = kingCoords[1] + velocityY*i
+
+        if x > 7 or x < 0:
+          return False
+        if y > 7 or y < 0:
+          return False
+        piece = self.board.getPiece((x, y))
+        if(not piece.isEmpty()):
+          return piece
+      
+
+
+    upRook = movingPiece(0, 1)
+    downRook = movingPiece(0, -1)
+    rightRook = movingPiece(1, 0)
+    leftRook = movingPiece(-1, 0)
+
+    for rook in [upRook, downRook, rightRook, leftRook]:
+      if rook != False:
+        if rook.getColor() != color:
+          if rook.getType() == 'r' or rook.getType() == 'q':
+            return True
+        
+
+    upleftBishop = movingPiece(-1, 1)
+    uprightBishop = movingPiece(1, 1)
+    downleftBishop = movingPiece(-1, -1)
+    downrightBishop = movingPiece(1, -1)
+
+    for bishop in [upleftBishop, uprightBishop, downleftBishop, downrightBishop]:
+      if bishop != False:
+        if bishop.getColor() != color:
+          if bishop.getType() == 'b' or bishop.getType() == 'q':
+            return True
+    
+    #pawns
+    direction = self.board.getPiece(kingCoords).getDirection()
+
+    # print(kingCoords, self.board.getKing(color), "\n\n\n")
+    pawn1 = (kingCoords[0] + 1, kingCoords[1] + direction)
+    pawn2 = (kingCoords[0] - 1, kingCoords[1] + direction)
+
+    for p in [pawn1, pawn2]:
+      if p[0] > 7 or p[0] < 0 or p[1] > 7 or p[1] < 0:
+        continue
+      pawn = self.board.getPiece(p)
+      if(not pawn.isEmpty()):
+        if(pawn.getColor() != color and pawn.getType() == 'p'):
+          # print(pawn.getPos())          
+          return True
+        
+    #king (this has to be checked, as otherwise the program 
+    # won't know not to move kings next to kings)
+
+    for x in [-1, 0, 1]:
+      for y in [-1, 0, 1]:
+        if x == 0 and y == 0:
+          continue
+
+        newPos = (kingCoords[0] + x, kingCoords[1] + y)
+        if(newPos[0] > 7 or newPos[0] < 0 or newPos[1] > 7 or newPos[1] < 0):
+          continue
+
+        newPiece = self.board.getPiece(newPos)
+        if(not newPiece.isEmpty()):
+          if(newPiece.getColor() != color):
+            if(newPiece.getType() == 'k'):
+              return True
+            
+    
+    #knights
+    
+    positions = [(kingCoords[0]+1, kingCoords[1]+2), (kingCoords[0]+2, kingCoords[1]+1)]
+
+    for i in range(len(positions)):
+      positions.append((kingCoords[0] - (positions[i][0]-kingCoords[0]), positions[i][1]))
+
+    for i in range(len(positions)):
+      positions.append((positions[i][0], kingCoords[1] - (positions[i][1]-kingCoords[1])))
+
+   
+    for p in positions:
+
+      if p[0] < 0 or p[0] > 7:
+        continue
+        
+      if p[1] < 0 or p[1] > 7:
+        continue
+
+      currentPiece = self.board.getPiece(p)
+
+      if(not currentPiece.isEmpty()):
+        if (currentPiece.getColor() != color and currentPiece.getType() == 'kn'):
+          return True
+    
+    #yippee
+    return False
+    
+
+
+
 
   
   def undoMove(self):

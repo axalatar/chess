@@ -23,9 +23,11 @@ class Knight(base.Piece):
         return
       newMove = move.Move((self.x, self.y), (toX, toY))
       legalSpaces.add(newMove)
-    for i in range(-1, 2, 2):
+
+
+    for i in [-1, 1]:
       #top and bottom, -1 and 1
-      for b in range(-1, 2, 2):
+      for b in [-1, 1]:
         #left and right, again -1 and 1
         calculateLegality(i*2, b)
         calculateLegality(b, i*2)

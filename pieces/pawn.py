@@ -17,7 +17,7 @@ class Pawn(base.Piece):
       t = coords
       #f = from, t = to
       Y = t[1]
-      if(Y == 0 or Y == 8):
+      if(Y == 0 or Y == 7):
         legalSpaces.add(move.Move(f, t, 'kn'))
         legalSpaces.add(move.Move(f, t, 'q'))
         legalSpaces.add(move.Move(f, t, 'r'))

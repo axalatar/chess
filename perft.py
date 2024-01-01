@@ -13,6 +13,8 @@ promotions = 0
 checks = 0
 checkmates = 0
 
+
+
 def perft(depth, manager):
   global nodes
   global captures
@@ -34,21 +36,25 @@ def perft(depth, manager):
       manager.undoMove()
       continue
 
-    if(move.special == 'c'): 
-      castles += 1
-    elif(move.special == 'en'):
-      ep += 1
-    elif(move.special is not None):
-      promotions += 1
-    if(manager.isInCheck(manager.getColorTurn())):
-      checks += 1
-      manager.checkMate()
-      if(manager.status == "checkmate"):
-        checkmates += 1
-    if(move.captured is not None):
-      captures += 1
-
-    perft(depth-1, manager)
+    if(depth <= 1):
+      if(move.special == 'c'): 
+        castles += 1
+      elif(move.special == 'en'):
+        ep += 1
+      elif(move.special is not None):
+        promotions += 1
+      if(manager.isInCheck(manager.getColorTurn())):
+        checks += 1
+        manager.checkMate()
+        if(manager.status == "checkmate"):
+          checkmates += 1
+      if(move.captured is not None):
+        captures += 1
+      
+      nodes += 1
+    else:
+      perft(depth-1, manager)
+    
     manager.undoMove()
 
 
